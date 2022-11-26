@@ -1,0 +1,58 @@
+#!/bin/bash
+# -------------------------------------------------------------
+# Purpose:
+# Filtering a list of files taken from STDIN.
+#
+# Usage:
+# >>> fs.files | fs.replace "Lorem Ipsum" "Sit Amet Dolor"
+# -------------------------------------------------------------
+FILES=""
+if [[ ! -t 0 ]]
+then
+    STDIN="$(cat)"
+    if [ ! -z "${STDIN}" ]
+    then
+        FILES="${STDIN}"
+    fi
+else
+    FILES="${3}"
+fi
+if [ -z "${FILES}" ]
+then
+    exit 0
+fi
+if [ -z "${1}" ]
+then
+    echo "ERROR: Missing pattern in $0"
+    exit 1
+fi
+if [ -z "${2}" ]
+then
+    echo "ERROR: Missing string in $0"
+    exit 1
+fi
+IFS='
+'
+set -f
+for FILE in ${FILES}
+do
+    if [[ -f "${FILE}" && -r "${FILE}" && -w "${FILE}" && $(file ${FILE} | grep "ASCII") ]]
+    then
+        BEFORE=$(grep "$1" "${FILE}")
+        if [ "$?" == "0" ]
+        then
+            sed -i "s/$1/$2/g" "${FILE}"
+            if [ "$?" != "0" ]
+            then
+                echo "ERROR: Failed to replace string in file"
+                exit 2
+            fi
+            AFTER=$(grep "$2" "${FILE}")
+            echo "${FILE}:"
+            echo "  [x] ${BEFORE}"
+            echo "  [✔] ${AFTER}"
+        fi
+    fi
+done
+set +f
+unset IFS

@@ -1,0 +1,37 @@
+#!/bin/bash
+# -------------------------------------------------------------
+# Purpose:
+# Removing from AWS S3.
+#
+# Usage:
+# >>> s3.rm s#://<bucket>/<key>
+# -------------------------------------------------------------
+echo "ERROR: Disabled for security purposes. Enable on demand"; exit 0
+if [ -z "${PROFILE}" ]
+then
+    PROFILE="martin"
+fi
+TARGET="$1"
+if [ -z "${TARGET}" ]
+then
+    echo "ERROR: Directory is required in $0."
+    exit 1
+fi
+if [[ ! "${TARGET}" =~ ^s3:// ]]
+then
+    TARGET="s3://${TARGET}"
+fi
+RECURSIVE=""
+if [[ "${TARGET}" =~ /$ ]]
+then
+    RECURSIVE="--recursive"
+fi
+aws s3 rm \
+    --profile "${PROFILE}" \
+    "${RECURSIVE}" \
+    "${TARGET}" # --dryrun
+if [ "$?" != "0" ]
+then 
+    echo "ERROR: Failed to execute: $@"
+    exit 100
+fi

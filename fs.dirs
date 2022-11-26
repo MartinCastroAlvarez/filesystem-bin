@@ -1,0 +1,31 @@
+#!/bin/bash
+# -------------------------------------------------------------
+# Purpose:
+# Lists all subdirectores, including the full path.
+#
+# Usage:
+# >>> fs.dirs /tmp/a/
+# -------------------------------------------------------------
+TARGET=$1
+if [ -z "${TARGET}" ]
+then
+    TARGET=$(pwd)
+fi
+if [ ! -d "${TARGET}" ]
+then
+    echo "ERROR: The first argument must be a directory in $0"
+    exit 2
+fi
+if [ "${SHELL}" == "bash" ]
+then
+    find "${TARGET}/" -mindepth 1 -type "d" 2>/dev/null \
+        | xargs -i{} fs.full {}
+else
+    find "${TARGET}/" -mindepth 1 -type "d" 2>/dev/null \
+        | xargs -I{} fs.full {}
+fi
+if [ "$?" != "0" ]
+then
+    echo "ERROR: Failed to execute: $@"
+    exit 100
+fi

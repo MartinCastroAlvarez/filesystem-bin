@@ -1,0 +1,68 @@
+#!/bin/bash
+# -------------------------------------------------------------
+# Purpose:
+# Filtering a list of files taken from STDIN.
+#
+# Usage:
+# >>> fs.files | fs.filter -i "Lorem Ipsum"
+# >>> fs.files | fs.filter -v "Ignore"
+# -------------------------------------------------------------
+GREP=($@)
+if [ -z "${GREP}" ]
+then
+    echo "ERROR: Missing grep parameters in $0"
+    exit 1
+fi
+if [[ ! -t 0 ]]
+then
+    STDIN="$(cat)"
+    if [ ! -z "${STDIN}" ]
+    then
+        FILES="${STDIN}"
+    fi
+    if [ -z "${FILES}" ]
+    then
+        exit 0
+    fi
+    IFS='
+    '
+    set -f
+    for FILE in ${FILES}
+    do
+        if [[ -f "${FILE}" && -r "${FILE}" && $(file ${FILE} | grep "ASCII") ]]
+        then
+            grep \
+                --binary-files "without-match" \
+                --devices "skip" \
+                --color \
+                --line-number \
+                --with-filename \
+                --directories "recurse" \
+                --exclude-dir "__pycache__" \
+                --exclude-dir "node_modules" \
+                --exclude ".*/__pycache__/.*" \
+                --exclude "*.pyc$" \
+                ${GREP[@]} \
+                "${FILE}"
+        fi
+    done
+    set +f
+    unset IFS
+else
+    grep \
+        --recursive \
+        --binary-files "without-match" \
+        --devices "skip" \
+        --color \
+        --line-number \
+        --with-filename \
+        --directories "recurse" \
+        --exclude-dir "__pycache__" \
+        --exclude-dir "node_modules" \
+        --exclude ".*/__pycache__/.*" \
+        --exclude "*.pyc$" \
+        ${GREP[@]} \
+        .
+fi
+
+

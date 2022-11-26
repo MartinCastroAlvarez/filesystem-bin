@@ -1,0 +1,26 @@
+#!/bin/bash
+# -------------------------------------------------------------
+# Purpose:
+# Getting the size of a file in AWS S3
+#
+# Usage:
+# >>> s3.size s#://<bucket>/<key>
+# -------------------------------------------------------------
+if [ -z "${PROFILE}" ]
+then
+    PROFILE="martin"
+fi
+BUCKET="$1"
+if [ -z "${BUCKET}" ]
+then
+    echo "ERROR: Bucket is required in $0."
+    exit 1
+fi
+if [[ ! "${BUCKET}" =~ ^s3:// ]]
+then
+    BUCKET="s3://${BUCKET}"
+fi
+aws s3api list-objects \
+    --profile "${PROFILE}" \
+	--bucket "${BUCKET}" \
+	--query "[sum(Contents[].Size), length(Contents[])]"

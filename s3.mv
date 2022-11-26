@@ -1,0 +1,31 @@
+#!/bin/bash
+# -------------------------------------------------------------
+# Purpose:
+# Moving a file in AWS S3.
+#
+# Usage:
+# >>> s3.mv s#://<bucket>/<key> s3://<bucket>/<key>
+# -------------------------------------------------------------
+if [ -z "${PROFILE}" ]
+then
+    PROFILE="martin"
+fi
+FROM="$1"
+TARGET="$2"
+if [[ ! "${FROM}" =~ ^s3:// ]]
+then
+    FROM="s3://${FROM}"
+fi
+if [[ ! "${TO}" =~ ^s3:// ]]
+then
+    TO="s3://${TO}"
+fi
+aws s3 \
+    --profile "${PROFILE}" \
+    --recursive \
+    mv "${FROM}" "${TARGET}"
+if [ "$?" != "0" ]
+then 
+    echo "ERROR: Failed to execute: $@"
+    exit 100
+fi

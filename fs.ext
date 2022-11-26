@@ -1,0 +1,21 @@
+#!/bin/bash
+# -------------------------------------------------------------
+# Purpose:
+# Extracts the extension of a file.
+#
+# Usage:
+# >>> fs.ext a.png
+# -------------------------------------------------------------
+TARGET="$1"
+if [ -z "${TARGET}" ]
+then
+    echo "ERROR: Invalid file name in $0"
+    exit 1
+fi
+if [ ! -f "${TARGET}" ]
+then
+    echo "ERROR: The first argument must be a file in $0, got: '${TARGET}'"
+    exit 2
+fi
+filename=$(basename -- "${TARGET}")
+echo "${filename##*.}"

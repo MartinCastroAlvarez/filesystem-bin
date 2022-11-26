@@ -1,0 +1,42 @@
+#!/bin/bash
+# -------------------------------------------------------------
+# Purpose:
+# Applies a function to each file in STDIN.
+#
+# Usage:
+# >>> fs.files | fs.map fs.name
+# >>> fs.files | fs.map fs.ext
+# -------------------------------------------------------------
+FILES=""
+if [[ ! -t 0 ]]
+then
+    STDIN="$(cat)"
+    if [ ! -z "${STDIN}" ]
+    then
+        FILES="${STDIN}"
+    fi
+else
+    FILES=$(fs.files)
+fi
+if [ -z "${FILES}" ]
+then
+    exit 0
+fi
+FUNCTION=($@)
+if [ -z "${FUNCTION}" ]
+then
+    echo "ERROR: Missing function to apply in parameters in $0"
+    exit 1
+fi
+IFS='
+'
+set -f
+for FILE in ${FILES}
+do
+    if [ -f "${FILE}" ]
+    then
+        ${FUNCTION[@]} "${FILE}"
+    fi
+done
+set +f
+unset IFS

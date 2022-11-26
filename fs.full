@@ -1,0 +1,27 @@
+#!/bin/bash
+# -------------------------------------------------------------
+# Purpose:
+# Extracts the full path of a file.
+#
+# Usage:
+# >>> fs.full a.png
+# -------------------------------------------------------------
+TARGET="$1"
+if [ -z "${TARGET}" ] 
+then
+    echo "ERROR: Invalid file name in $0"
+    exit 1
+fi
+if [[ ! -f "${TARGET}" && ! -d "${TARGET}" ]]
+then
+    echo "ERROR: The path does not exist in $0"
+    exit 2
+fi
+which realpath >/dev/null
+if [ "$?" != "0" ]
+then
+    echo "ERROR: Please install realpath!"
+    echo "ERROR: Try: brew install coreutils"
+    exit 3
+fi
+realpath "${TARGET}"

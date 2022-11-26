@@ -1,0 +1,25 @@
+#!/bin/bash
+# -------------------------------------------------------------
+# Purpose:
+# Calculates the SHA256 of a file. This action is cached.
+#
+# Usage:
+# >>> fs.sha256 a.png
+# -------------------------------------------------------------
+TARGET="$1"
+if [ -z "${TARGET}" ]
+then
+    echo "ERROR: Invalid file name in $0"
+    exit 1
+fi
+if [ ! -f "${TARGET}" ]
+then
+    echo "ERROR: The first argument must be a file in $0"
+    exit 2
+fi
+CACHE="/tmp/$(echo "${TARGET}" | md5sum | /bin/cut -f1 -d" ").cache"
+if [ ! -f "${CACHE}" ]
+then
+    sha256sum ${TARGET} | awk '{print $1}' > ${CACHE}
+fi
+cat ${CACHE}

@@ -1,0 +1,28 @@
+#!/bin/bash
+# -------------------------------------------------------------
+# Purpose:
+# Uploading to AWS S3.
+#
+# Usage:
+# >>> s3.post s#://<bucket>/<key>
+# -------------------------------------------------------------
+if [ -z "${PROFILE}" ]
+then
+    PROFILE="martin"
+fi
+DIR="$1"
+if [ -z "${DIR}" ]
+then
+    echo "ERROR: Path required in $0."
+    exit 1
+fi
+if [[ ! "${DIR}" =~ ^s3:// ]]
+then
+    DIR="s3://${DIR}"
+fi
+aws s3 --profile "${PROFILE}" sync . "${DIR}"
+if [ "$?" != "0" ]
+then
+    echo "ERROR: Failed to execute: $@"
+    exit 100
+fi

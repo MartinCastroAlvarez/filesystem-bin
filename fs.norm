@@ -1,0 +1,45 @@
+#!/bin/bash
+# -------------------------------------------------------------
+# Purpose:
+# Normalising files in the target directory.
+#
+# Usage:
+# >>> fs.norm /tmp/a/
+# -------------------------------------------------------------
+TARGET=$1
+if [ -z "${TARGET}" ]
+then
+    TARGET=$(pwd)
+fi
+if [ ! -d "${TARGET}" ]
+then
+    echo "ERROR: The first argument must be a directory in $0"
+    exit 2
+fi
+fs.files ${TARGET} | while read -r OLD_NAME
+do
+    EXTENSION="$(fs.ext "${OLD_NAME}")"
+    if [ "$?" != "0" ]
+    then 
+        echo "ERROR: Failed to extract extension of ${OLD_NAME}: ${EXTENSION}"
+        exit 3
+    fi
+    SHA256="$(fs.sha256 "${OLD_NAME}")"
+    if [ "$?" != "0" ]
+    then 
+        echo "ERROR: Failed to calculate SHA256 of ${OLD_NAME}: ${SHA256}"
+        exit 4
+    fi
+    DIRNAME="$(fs.path "${OLD_NAME}")"
+    if [ "$?" != "0" ]
+    then
+        echo "ERROR: Failed to extract dirname of ${OLD_NAME}: ${DIRNAME}"
+        exit 5
+    fi
+    NEW_NAME="${DIRNAME}/${SHA256}.${EXTENSION}"
+    if [ "${OLD_NAME}" != "${NEW_NAME}" ]
+    then
+        echo "${OLD_NAME} -> ${NEW_NAME}" 
+        mv "${OLD_NAME}" "${NEW_NAME}"
+    fi
+done

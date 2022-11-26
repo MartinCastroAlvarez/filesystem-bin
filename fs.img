@@ -1,0 +1,14 @@
+#!/bin/bash
+# -------------------------------------------------------------
+# Purpose:
+# Lists all images in directory, including the full path.
+#
+# Usage:
+# >>> fs.img /tmp/a/
+# -------------------------------------------------------------
+fs.files $@ | egrep ".png$|.jpg$|.jpeg$|.gif$"
+if [ "$?" != "0" ]
+then
+    echo "ERROR: Failed to execute: $@"
+    exit 100
+fi

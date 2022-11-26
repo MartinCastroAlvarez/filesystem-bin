@@ -1,0 +1,10 @@
+#!/bin/bash
+# -------------------------------------------------------------
+# Purpose:
+# Filtering a list of files taken from STDIN.
+#
+# Usage:
+# >>> fs.files | fs.find -i "Lorem Ipsum"
+# >>> fs.files | fs.find -v "Ignore"
+# -------------------------------------------------------------
+fs.grep $@ | sed 's/:.*//' | awk '{print $1}' | sort | uniq

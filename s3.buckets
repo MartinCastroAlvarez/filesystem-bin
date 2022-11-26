@@ -1,0 +1,18 @@
+#!/bin/bash
+# -------------------------------------------------------------
+# Purpose:
+# Listing buckets in AWS S3.
+#
+# Usage:
+# >>> s3.buckets
+# -------------------------------------------------------------
+if [ -z "${PROFILE}" ]
+then
+    PROFILE="martin"
+fi
+aws s3 --profile "${PROFILE}" list-buckets
+if [ "$?" != "0" ]
+then 
+    echo "ERROR: Failed to execute: $@"
+    exit 100
+fi
