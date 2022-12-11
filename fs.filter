@@ -7,7 +7,7 @@
 # >>> fs.files | fs.filter -i "Lorem Ipsum"
 # >>> fs.files | fs.filter -v "Ignore"
 # -------------------------------------------------------------
-GREP=($@)
+GREP="${@}"
 if [ -z "${GREP}" ]
 then
     echo "ERROR: Missing grep parameters in $0"
@@ -40,7 +40,7 @@ then
                 --exclude-dir "node_modules" \
                 --exclude ".*/__pycache__/.*" \
                 --exclude "*.pyc$" \
-                ${GREP[@]} \
+                "${GREP[@]}" \
                 "${FILE}" >/dev/null
             if [ "$?" == "0" ]
             then
@@ -61,6 +61,6 @@ else
         --exclude-dir "node_modules" \
         --exclude ".*/__pycache__/.*" \
         --exclude "*.pyc$" \
-        ${GREP[@]} \
+        "${GREP[@]}" \
         . | fs.map fs.full
 fi
